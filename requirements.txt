@@ -1,0 +1,4 @@
+PyYAML==6.0.2
+docopt==0.6.2
+openai==1.76.2
+requests==2.32.3
