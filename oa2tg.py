@@ -13,14 +13,13 @@ Options:
   -h --help            Show this help message.
 """
 
-from docopt import docopt
-from openai import OpenAI
-import random
 import sys
+import logging
+import random
 import requests
 import yaml
-import logging
-
+from docopt import docopt
+from openai import OpenAI
 
 def setup_logger(verbose=False):
     """Sets up basic logger with optional verbose output."""
@@ -40,7 +39,7 @@ def parse_yaml_config(config_path, logger):
         dict: Parsed YAML content as a dictionary.
     """
     try:
-        with open(config_path, "r") as file:
+        with open(config_path, "r", encoding="utf-8") as file:
             config = yaml.safe_load(file)
             return config
     except FileNotFoundError:
@@ -106,7 +105,7 @@ def post_to_tg(config, text, autopost, logger):
     }
 
     try:
-        response = requests.post(tg_url, json=params, headers=headers)
+        response = requests.post(tg_url, json=params, headers=headers, timeout=10)
         logger.info(response.status_code)
         logger.debug(response.json())
         response.raise_for_status()
@@ -116,6 +115,7 @@ def post_to_tg(config, text, autopost, logger):
 
 
 def main():
+    """Main function"""
     args = docopt(__doc__)
     config_path = args["-c"]
     custom_prompt = args["-p"]
@@ -123,15 +123,15 @@ def main():
     autopost = args["-a"]
 
     logger = setup_logger(verbose)
-    logger.debug(f"Custom string provided: {custom_prompt}")
-    logger.debug(f"Arguments received: {args}")
+    logger.debug("Custom string provided: %s", custom_prompt)
+    logger.debug("Arguments received: %s", args)
 
     config = parse_yaml_config(config_path, logger)
 
     required_keys = ["openai_key", "tg_key", "tg_chat", "ai_model", "preamble", "topics"]
     for key in required_keys:
         if key not in config:
-            logger.error(f"Missing required config key: {key}")
+            logger.error("Missing required config key: %s", key)
             sys.exit(1)
 
     logger.debug("\nFinal parsed config:")
