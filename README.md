@@ -99,6 +99,15 @@ docker build -t oa2tg:latest .
     docker run -v `pwd`/.config.yaml:/app/.config.yaml oa2tg:latest -a -d
     ```
 
+## Unit tests
+
+This mini project contains a basic set of Python unit tests. To run tests please do the following:
+
+```bash
+pip install -r requirements.txt
+python -m unittest
+```
+
 ## Known issues
 
 Sometimes the response of OpenAI might be too long so telegram API will reject it.
